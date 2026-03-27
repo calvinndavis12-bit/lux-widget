@@ -8,6 +8,7 @@ var CFG={
   SHOP_URL:'https://inspiredbylux.com',
   MODEL:'claude-haiku-4-5-20251001',
   MAX_TOKENS:600,
+  TRACK_URL:'https://lux-proxy-production.up.railway.app/api/track',
 };
 
 // ── State ─────────────────────────────────────────────
@@ -281,6 +282,7 @@ function buildCard(f){
   var ca=mk('div','lx-ca');
   var bv=document.createElement('a');bv.className='lx-bv';bv.textContent='View';
   bv.href=CFG.SHOP_URL+'/products/'+f.handle;bv.target='_blank';
+  bv.addEventListener('click',function(){fetch(CFG.TRACK_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({event:'click'})}).catch(function(){});});
   ca.appendChild(bv);
 
   var bc=mk('button','lx-bc');bc.textContent='Add to Cart';
@@ -326,6 +328,7 @@ async function addToCart(f,size,btn){
     if(!cr.ok)throw new Error();
     btn.classList.remove('lx-adding');btn.classList.add('lx-added');btn.textContent='Added ✓';
     setTimeout(function(){botMsg('Added to cart! 🛒 <a href="'+CFG.SHOP_URL+'/cart" style="color:var(--lx-gold)">View your cart →</a>');},300);
+    fetch(CFG.TRACK_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({event:'cart'})}).catch(function(){});
   }catch(e){
     btn.classList.remove('lx-adding');btn.textContent='Add to Cart';
     botMsg('Visit <a href="'+CFG.SHOP_URL+'/products/'+f.handle+'" target="_blank" style="color:var(--lx-gold)">'+f.name+'</a> to add to your cart.');
